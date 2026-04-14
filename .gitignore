@@ -1,3 +1,4 @@
+*.joblib
 models/
 model-best/
 __pycache__/

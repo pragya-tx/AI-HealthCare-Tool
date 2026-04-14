@@ -472,55 +472,55 @@ class SymptomPipeline:
 # Test runner
 # ══════════════════════════════════════════════════════════════════════════════
 
-if __name__ == "__main__":
-    pipe = SymptomPipeline()
+# if __name__ == "__main__":
+#     pipe = SymptomPipeline()
 
-    tests = [
-        # ── Long spans — should trigger decomposition ──────────────────────
-        "feel like absolute garbage today, stomach is killing me and im freezing",
-        "my throat is on fire and i keep coughing up stuff",
-        "i get this weird pressure behind my eyes when i stand up",
+#     tests = [
+#         # ── Long spans — should trigger decomposition ──────────────────────
+#         "feel like absolute garbage today, stomach is killing me and im freezing",
+#         "my throat is on fire and i keep coughing up stuff",
+#         "i get this weird pressure behind my eyes when i stand up",
 
-        # ── Previously failing — NER gaps / colloquial ─────────────────────
-        "omg my head is literally pounding i cant take it anymore",
-        "I have had diarrhea for 3 days straight",
-        "my lower back has been in agony since yesterday morning",
-        "I keep having panic attacks out of nowhere",
-        "cant even get out of bed im so weak and dizzy",
+#         # ── Previously failing — NER gaps / colloquial ─────────────────────
+#         "omg my head is literally pounding i cant take it anymore",
+#         "I have had diarrhea for 3 days straight",
+#         "my lower back has been in agony since yesterday morning",
+#         "I keep having panic attacks out of nowhere",
+#         "cant even get out of bed im so weak and dizzy",
 
-        # ── Clear multi-symptom ────────────────────────────────────────────
-        "I have been having chest pain and shortness of breath for the past two days",
-        "my stomach hurts really bad and i keep throwing up",
-        "I have a fever of 103 and my whole body aches",
-        "been getting really bad migraines and my vision goes blurry",
+#         # ── Clear multi-symptom ────────────────────────────────────────────
+#         "I have been having chest pain and shortness of breath for the past two days",
+#         "my stomach hurts really bad and i keep throwing up",
+#         "I have a fever of 103 and my whole body aches",
+#         "been getting really bad migraines and my vision goes blurry",
 
-        # ── Single dominant symptom ────────────────────────────────────────
-        "I am having trouble sleeping, been awake for two days",
-        "my right ear has been ringing nonstop for a week",
-        "been losing weight without trying and im always tired",
-        "my hands go numb when i wake up every morning",
+#         # ── Single dominant symptom ────────────────────────────────────────
+#         "I am having trouble sleeping, been awake for two days",
+#         "my right ear has been ringing nonstop for a week",
+#         "been losing weight without trying and im always tired",
+#         "my hands go numb when i wake up every morning",
 
-        # ── Negative cases — expect no output ─────────────────────────────
-        "I just wanted to know if I should take ibuprofen or paracetamol",
-        "my doctor said my blood work came back normal",
-    ]
+#         # ── Negative cases — expect no output ─────────────────────────────
+#         "I just wanted to know if I should take ibuprofen or paracetamol",
+#         "my doctor said my blood work came back normal",
+#     ]
 
-    for text in tests:
-        print(f"\n{'='*60}")
-        print(f"Input: {text}")
+#     for text in tests:
+#         print(f"\n{'='*60}")
+#         print(f"Input: {text}")
 
-        confirmed, ambiguous = pipe.extract_interactive(text)
+#         confirmed, ambiguous = pipe.extract_interactive(text)
 
-        if confirmed:
-            print("\n  Confirmed symptoms:")
-            for r in confirmed:
-                tag = "(auto)" if r["user_confirmed"] is None else "(user)"
-                print(f"{tag} '{r['raw']}' → '{r['matched_symptom']}' ({r['score']})")
+#         if confirmed:
+#             print("\n  Confirmed symptoms:")
+#             for r in confirmed:
+#                 tag = "(auto)" if r["user_confirmed"] is None else "(user)"
+#                 print(f"{tag} '{r['raw']}' → '{r['matched_symptom']}' ({r['score']})")
 
-        if ambiguous:
-            print("\n  User-confirmed ambiguous symptoms:")
-            for r in ambiguous:
-                print(f"'{r['raw']}' → '{r['matched_symptom']}' ({r['score']})")
+#         if ambiguous:
+#             print("\n  User-confirmed ambiguous symptoms:")
+#             for r in ambiguous:
+#                 print(f"'{r['raw']}' → '{r['matched_symptom']}' ({r['score']})")
 
-        if not confirmed:
-            print("  No symptoms extracted.")
+#         if not confirmed:
+#             print("  No symptoms extracted.")
