@@ -1,0 +1,7 @@
+models/
+model-best/
+__pycache__/
+*.pyc
+*.bin
+*.pt
+*.pth
