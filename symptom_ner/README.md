@@ -1,97 +1,199 @@
-# 🩺 Clinical Symptom Extraction Pipeline
+# 🩺 Symptom Extraction Pipeline
 
-A two-stage machine learning pipeline designed to automatically extract medical symptoms from raw patient text and seamlessly map them to a standardized medical vocabulary.
-
----
-
-## 🌟 How It Works
-
-The pipeline operates in two powerful stages to ensure high accuracy and clean data:
-
-### **Stage 1: Symptom Extraction (spaCy NER)**
-- Reads the raw patient text (e.g., *"I have severe chest pain and my neck is stiff"*).
-- Detects and extracts the exact phrases related to symptoms using a custom-trained **spaCy** Named Entity Recognition (NER) model.
-
-### **Stage 2: Standardization (BioBERT)**
-- Takes the extracted phrases and matches them to a standard, predefined medical vocabulary (`symptoms_vocab.json`).
-- Uses **BioBERT** (a medical language model via `sentence-transformers`) to calculate how closely the extracted phrase matches the official symptom name.
-- Categorizes the results into three tiers based on similarity:
-  - ✅ **Confirmed** (Score $\ge$ 0.72): Automatically accepted and stored.
-  - ⚠️ **Ambiguous** (Score 0.45 - 0.71): Unsure matches that can be presented to a human for Yes/No confirmation.
-  - ❌ **Rejected** (Score < 0.45): Automatically discarded as an incorrect extraction.
+A two-stage NLP pipeline that reads patient text, finds symptoms automatically, and maps them to a clean standardized medical vocabulary.
 
 ---
 
-## 🚀 Getting Started
+## What Does It Do?
 
-### 1. Prerequisites
-First, install the necessary dependencies from the `requirements.txt` file. We have ensured these versions are stable and won't conflict.
+You give it a sentence like:
+
+> *"I have been having chest pain and my neck is really stiff"*
+
+It gives you back:
+
+```
+✅ chest pain       → chest discomfort   (0.87)
+✅ neck is stiff    → neck stiffness     (0.91)
+```
+
+No manual work. No rules. Just patient text in, clean symptoms out.
+
+---
+
+## How It Works
+
+There are two stages running back to back:
+
+**Stage 1 — Find the symptoms (spaCy NER)**
+A custom-trained Named Entity Recognition model reads the text and highlights the symptom phrases, the same way spell-check highlights a word but for medical symptoms.
+
+**Stage 2 — Standardize them (BioBERT)**
+The highlighted phrases are then matched against a list of ~200 standard clinical symptom names using BioBERT, a language model trained on medical text. It picks the closest match and gives it a confidence score.
+
+Based on that score, each symptom gets one of three labels:
+
+| Label | Score | Meaning |
+|---|---|---|
+| ✅ Confirmed | ≥ 0.70 | High confidence — kept automatically |
+| ⚠️ Ambiguous | 0.45 – 0.49 | Uncertain — optionally ask a human |
+| ❌ Rejected | < 0.45 | Low confidence — discarded |
+
+---
+
+## Setup
+
+**Step 1 — Install dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-*(This will install PyTorch, Transformers, Sentence-Transformers, and spaCy automatically).*
+**Step 2 — Download the NER model**
 
-### 2. Project Structure
-- `pipeline.py`: The core code containing the `SymptomPipeline` class.
-- `evaluate_pipeline.py`: A script to test and evaluate the pipeline against built-in test cases.
-- `extract_vocab.py`: A helper script for updating the medical vocabulary (`symptoms_vocab.json`) from a CSV source.
-- `models/symptom_ner_best/`: The saved, custom-trained spaCy NER model.
-- `symptoms_vocab.json`: The standardized list of clinical symptoms.
-
----
-
-## 💻 Usage Examples
-
-You can run the full pipeline in three different modes depending on your application's needs. 
-
-### A. Fully Automatic (No User Input)
-Extracts and returns only the **Confirmed** symptoms. Any ambiguous or rejected matches are silently ignored.
+The trained model is hosted on Hugging Face. Download it with:
 
 ```python
-from pipeline import SymptomPipeline
+from huggingface_hub import snapshot_download
 
-pipe = SymptomPipeline()
-results = pipe.extract("I woke up feeling nauseous and threw up twice.")
-print(results)
+snapshot_download(
+    repo_id="HuggingIceQueen/symptom-ner-spacy",
+    local_dir="models/symptom_ner_best"
+)
 ```
 
-### B. Interactive (Human-in-the-Loop)
-Prompts you via the command line with a Yes/No question whenever it finds an **Ambiguous** symptom.
+Or manually from:
+👉 https://huggingface.co/HuggingIceQueen/symptom-ner-spacy
 
-```python
-from pipeline import SymptomPipeline
+Place the downloaded folder at `models/symptom_ner_best/` inside this directory.
 
-pipe = SymptomPipeline()
-results = pipe.extract_interactive("my heart keeps doing a weird fluttering thing")
-```
-
-### C. Batch Processing
-Automatically processes a list of texts (returns only Confirmed matches).
-
-```python
-from pipeline import SymptomPipeline
-
-pipe = SymptomPipeline()
-texts = [
-    "I have a high fever",
-    "my lower back is killing me"
-]
-confident_results , ambigous_results = pipe.extract_batch(texts)
-```
-
----
-
-## 🧪 Running the Built-In Tests
-To see the pipeline in action, you can easily run the evaluation script:
-
-```bash
-python evaluate_pipeline.py
-```
-
-Or, you can run `pipeline.py` directly to see the interactive, human-in-the-loop Command Line Interface:
+**Step 3 — You're ready**
 
 ```bash
 python pipeline.py
 ```
+
+---
+
+## Usage
+
+### Option A — Automatic (recommended for apps)
+
+Just pass text, get confirmed symptoms back. No prompts, no interaction.
+
+```python
+from pipeline import SymptomPipeline
+
+pipe = SymptomPipeline()
+
+results = pipe.extract("I woke up feeling nauseous and threw up twice")
+
+for r in results:
+    print(r["raw"], "→", r["matched_symptom"], f"({r['score']})")
+```
+
+Output:
+```
+nauseous → nausea (0.81)
+threw up → vomiting (0.76)
+```
+
+---
+
+### Option B — Interactive (human in the loop)
+
+When a symptom is uncertain, the pipeline asks you yes or no before including it.
+
+```python
+from pipeline import SymptomPipeline
+
+pipe = SymptomPipeline()
+
+confirmed, ambiguous = pipe.extract_interactive("my heart keeps doing a weird fluttering thing")
+```
+
+Terminal output:
+```
+  Possible symptom detected:
+    Patient said : "weird fluttering"
+    Closest match: "heart palpitations" (similarity: 0.48)
+  Is this a symptom? (y/n): y
+```
+
+`confirmed` contains everything accepted (auto + user).
+`ambiguous` contains only the ones the user said yes to.
+
+---
+
+### Option C — Batch processing
+
+Process a list of texts at once. Returns only confirmed symptoms per text.
+
+```python
+from pipeline import SymptomPipeline
+
+pipe = SymptomPipeline()
+
+texts = [
+    "I have a high fever and chills",
+    "my lower back is killing me",
+    "I feel completely fine"
+]
+
+results = pipe.extract_batch(texts)
+
+for text, symptoms in zip(texts, results):
+    print(f"\n{text}")
+    for s in symptoms:
+        print(f"  → {s['matched_symptom']} ({s['score']})")
+```
+
+---
+
+## Project Structure
+
+```
+symptom_ner/
+├── pipeline.py              # Main pipeline — SymptomPreprocessor, Extractor, SymptomPipeline
+├── extract_vocab.py         # Helper to update symptoms_vocab.json from a CSV
+├── symptoms_vocab.json      # ~200 standardized clinical symptom names
+├── requirements.txt         # All dependencies
+├── models/
+│   └── symptom_ner_best/    # Trained spaCy NER model (download from Hugging Face)
+└── README.md
+```
+
+---
+
+## Requirements
+
+- Python 3.9+
+- spaCy 3.x
+- sentence-transformers
+- PyTorch
+- en_core_web_sm (spaCy model for dependency parsing)
+
+Install the spaCy language model separately:
+
+```bash
+python -m spacy download en_core_web_sm
+```
+
+---
+
+## NER Model Details
+
+| Property | Value |
+|---|---|
+| Framework | spaCy 3.x |
+| Entity type | `SYMPTOM` |
+| Training data | ~16,000 labeled symptom entities from medical forum posts |
+| Hosted at | [HuggingFace](https://huggingface.co/HuggingIceQueen/symptom-ner-spacy) |
+
+---
+
+## Limitations
+
+- The NER model was trained on informal patient text (medical forums). It may perform differently on formal clinical notes.
+- Colloquial expressions like *"my head is pounding"* may not always be caught — a synonym map is planned for a future update.
+- BioBERT matching is limited to the symptoms defined in `symptoms_vocab.json`. Symptoms outside the vocab will be scored against the closest available term.

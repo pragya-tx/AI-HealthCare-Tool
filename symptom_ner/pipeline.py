@@ -7,7 +7,7 @@ Classes:
     SymptomPipeline      — Orchestrates both, exposes public API
 
 Three tiers based on similarity score:
-    CONFIRMED  (score >= 0.50) — auto kept
+    CONFIRMED  (score >= 0.70) — auto kept
     AMBIGUOUS  (score 0.45-0.50) — presented to user for yes/no confirmation
     REJECTED   (score < 0.45) — silently dropped
 
@@ -45,7 +45,7 @@ DEFAULT_VOCAB    = ROOT / "symptoms_vocab.json"
 BIOBERT_MODEL = "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
 
 # Tier thresholds
-CONFIRMED_THRESHOLD = 0.50
+CONFIRMED_THRESHOLD = 0.70
 AMBIGUOUS_THRESHOLD = 0.45
 
 # Long span threshold — spans with >= this many words get decomposed
