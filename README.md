@@ -16,7 +16,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## Tech Stack
+## .Tech Stack
 
 ### Frontend
 - **Framework**: [Vite](https://vitejs.dev/) + [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
@@ -32,7 +32,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## Working
+## .Installation & Setup
 
 ### Prerequisites
 - Python 3.10+
@@ -80,7 +80,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## Structure
+## .Structure
 
 ```text
 AI-HealthCare-Tool/
