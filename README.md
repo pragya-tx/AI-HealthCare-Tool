@@ -1,6 +1,4 @@
-# HealthCare+ (AI-HealthCare-Tool) 🏥
-
-![HealthCare+ Hero](./healthcare_plus_hero_1776262131056.png)
+#  Niramaya (AI-HealthCare-Tool) 
 
 **HealthCare+** is a cutting-edge, hybrid AI medical assistant that combines local Machine Learning (NER & Classification) with Google's state-of-the-art **Gemma 3** (via Gemini API) to provide intelligent symptom analysis, disease prediction, and conversational medical guidance.
 
@@ -103,6 +101,6 @@ AI-HealthCare-Tool/
 
 ---
 
-##Feel free to open issues or submit pull requests to improve the clinical accuracy or UI/UX of the tool.
+## Feel free to open issues or submit pull requests to improve the clinical accuracy or UI/UX of the tool.
 
 **Developed with ❤️ for Advanced Healthcare Intelligence.**
