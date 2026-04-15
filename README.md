@@ -4,7 +4,6 @@
 
 **HealthCare+** is a cutting-edge, hybrid AI medical assistant that combines local Machine Learning (NER & Classification) with Google's state-of-the-art **Gemma 3** (via Gemini API) to provide intelligent symptom analysis, disease prediction, and conversational medical guidance.
 
-> [!WARNING]
 > **Medical Disclaimer**: This tool is for informational purposes only and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
 
 ---
@@ -20,7 +19,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: [Vite](https://vitejs.dev/) + [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
@@ -36,7 +35,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Working
 
 ### Prerequisites
 - Python 3.10+
@@ -84,7 +83,7 @@
 
 ---
 
-## 🏗️ Project Structure
+## Structure
 
 ```text
 AI-HealthCare-Tool/
@@ -104,18 +103,6 @@ AI-HealthCare-Tool/
 
 ---
 
-## 🛡️ Safety & Grounding
-
-HealthCare+ implements a multi-layer safety protocol:
-1. **Keyword Triggers**: Local screening for "emergency" terms.
-2. **LLM Validation**: Gemini is constrained via strict JSON schemas to prevent hallucinations.
-3. **ML Verification**: All chatbot responses are grounded in the output of the local ML prediction engine.
-
----
-
-## 🤝 Contributing
-Feel free to open issues or submit pull requests to improve the clinical accuracy or UI/UX of the tool.
-
----
+##Feel free to open issues or submit pull requests to improve the clinical accuracy or UI/UX of the tool.
 
 **Developed with ❤️ for Advanced Healthcare Intelligence.**
