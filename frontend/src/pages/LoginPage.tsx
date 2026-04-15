@@ -20,10 +20,11 @@ export default function LoginPage() {
       setError("");
       setLoading(true);
       await new Promise((r) => setTimeout(r, 400)); // tiny delay for UX
-      const result =
+      const result = await (
         mode === "signin"
           ? login(email, password)
-          : register(name, email, password);
+          : register(name, email, password)
+      );
       setLoading(false);
       if (!result.success) setError(result.error ?? "Something went wrong.");
     },

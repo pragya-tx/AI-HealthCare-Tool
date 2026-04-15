@@ -15,7 +15,7 @@ except ImportError:
     # Handle direct import if HAAHAHAHAHAHAH is already in sys.path
     from HAAHAHAHAHAHAH.Prediction import get_prediction, load_models
 
-from gemini_helper import get_gemini_analysis
+from gemini_helper import get_gemini_analysis, get_gemini_chat_reply
 
 load_dotenv()
 
@@ -51,6 +51,10 @@ def mock_user(email="user@example.com", name="Demo User"):
 
 @app.route("/", methods=["GET"])
 def index():
+    return app.send_static_file('index.html')
+
+@app.route("/api/info", methods=["GET"])
+def api_info():
     return jsonify({
         "message": "Welcome to the HealthCare+ Backend API",
         "endpoints": {
@@ -92,7 +96,15 @@ def predict():
     try:
         results = get_prediction(data["text"])
         
-        # Add Gemini Enrichment
+        # Check if ML pipeline returned an error
+        if isinstance(results, dict) and results.get("status") == "error":
+            return jsonify({
+                "predictions": [],
+                "analysis": None,
+                "message": results.get("message", "No symptoms could be identified.")
+            })
+        
+        # Add Gemini Enrichment (only with valid predictions)
         gemini_result = get_gemini_analysis(data["text"], results)
         
         return jsonify({
@@ -181,34 +193,31 @@ def chat():
         # Run ML prediction first to ground Gemini in local model data
         ml_predictions = get_prediction(message)
         
-        # Use Gemini for a conversational and medically informed reply
+        # Check if ML pipeline returned an error (no symptoms found)
+        if isinstance(ml_predictions, dict) and ml_predictions.get("status") == "error":
+            # No symptoms detected — still let Gemini give a helpful reply
+            reply = get_gemini_chat_reply(message, [], None)
+            return jsonify({
+                "reply": reply,
+                "analysis": None,
+                "ml_predictions": []
+            })
+        
+        # Get structured analysis from Gemini (for the frontend cards)
         analysis = get_gemini_analysis(message, ml_predictions)
         
-        if analysis:
-            reply = analysis.get("explanation", "I've analyzed your symptoms.")
-            if analysis.get("emergency_flag"):
-                reply = f"⚠️ EMERGENCY DETECTED: {analysis.get('emergency_reason')}\n\n{reply}"
-            
-            # Append recommended actions
-            if analysis.get("recommended_actions"):
-                reply += "\n\nRecommended Actions:\n- " + "\n- ".join(analysis["recommended_actions"])
-        else:
-            # Fallback to ML-only response if Gemini fails
-            if ml_predictions and len(ml_predictions) > 0:
-                top = ml_predictions[0]
-                reply = f"Based on symptoms, I found a possible match: {top['disease_name']} ({top['confidence_score']})."
-            else:
-                reply = "I'm listening. Please describe your symptoms in more detail so I can help you."
-            
+        # Generate a natural conversational reply for the chat bubble
+        reply = get_gemini_chat_reply(message, ml_predictions, analysis)
+        
         return jsonify({
             "reply": reply,
             "analysis": analysis,
-            "ml_predictions": ml_predictions[:2]
+            "ml_predictions": ml_predictions[:3] if isinstance(ml_predictions, list) else []
         })
     except Exception as e:
         print(f"Chat error: {e}")
         return jsonify({
-            "reply": "I'm having a bit of trouble analyzing that right now.",
+            "reply": "I'm having a bit of trouble analyzing that right now. Please try again in a moment.",
             "error": str(e)
         })
 
@@ -219,9 +228,8 @@ def not_found(e):
     # For SPA routing: serve index.html for any route not found by Flask
     return app.send_static_file('index.html')
 
-@app.route("/")
-def serve():
-    return app.send_static_file('index.html')
+# Note: The "/" route is handled by index() above (line 52).
+# The 404 handler serves index.html for SPA client-side routing.
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.getenv("PORT", 5000)))

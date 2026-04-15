@@ -4,24 +4,14 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function medicalAnalysis(data) {
-  const {
-    symptomslist,
-    normalizedsymptoms,
-    predictionswithprobabilities,
-    medicationdata,
-  } = data;
-
+async function medicalAnalysis(symptomslist, normalizedsymptoms, predictions) {
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro",
-
+    model: "gemma-3-27b-it",
     config: {
-      temperature: 0.2,         // ager kuch faltu output de then change to 0.3
+      temperature: 0.2,
       topP: 0.8,
       maxOutputTokens: 1024,
-      responseMimeType: "application/json" 
     },
-
     contents: [
       {
         role: "user",
@@ -36,6 +26,7 @@ Constraints:
 - Clearly separate high-risk vs low-risk.
 - Flag emergencies explicitly.
 - Keep output structured and concise.
+- Output ONLY raw valid JSON. No markdown, no backticks, no explanation.
 
 Output JSON schema:
 {
@@ -65,20 +56,18 @@ User Symptoms:
 ${symptomslist}
 
 Extracted Symptoms:
-${normalizedsymptoms}
+${normalizedsymptoms.join(", ")}
 
 Predicted Conditions:
-${JSON.stringify(predictionswithprobabilities)}
-
-Medication Mapping:
-${JSON.stringify(medicationdata)}
+${JSON.stringify(predictions, null, 2)}
 
 Instructions:
-1. Rank conditions by probability.
-2. Assign severity (low/medium/high).
-3. Detect emergency symptoms (chest pain, breathing issues, unconsciousness).
-4. Suggest doctor visit or OTC meds only if safe.
-5. Output ONLY valid JSON.
+1. Use "confidence_score" as probability.
+2. Respect given "rank" order.
+3. Use "symptom_contributions" ONLY for explanation.
+4. Assign severity (low/medium/high).
+5. Detect emergencies ONLY if explicitly present.
+6. Output ONLY raw valid JSON. No markdown, no backticks, no preamble.
 `
           }
         ]
@@ -86,5 +75,61 @@ Instructions:
     ]
   });
 
-  return response.text;
+  // strip markdown fences if model wraps output anyway
+  const raw = response.text.replace(/```json|```/g, "").trim();
+  return raw;
 }
+
+// -------- TEST INPUT --------
+const symptomslist = "burning abdominal pain, vomiting, headache";
+const normalizedsymptoms = ["burning abdominal pain", "vomiting", "headache"];
+const predictions = [
+  {
+    confidence_score: "57.95%",
+    disease_name: "infectious gastroenteritis",
+    rank: 1,
+    symptom_contributions: [
+      { boost_score: "51.0%", direction: "+", symptom: "burning abdominal pain" },
+      { boost_score: "39.4%", direction: "+", symptom: "vomiting" },
+      { boost_score: "9.6%", direction: "+", symptom: "headache" }
+    ]
+  },
+  {
+    confidence_score: "41.45%",
+    disease_name: "gastritis",
+    rank: 2,
+    symptom_contributions: [
+      { boost_score: "63.6%", direction: "+", symptom: "headache" },
+      { boost_score: "25.6%", direction: "+", symptom: "burning abdominal pain" },
+      { boost_score: "10.8%", direction: "+", symptom: "vomiting" }
+    ]
+  },
+  {
+    confidence_score: "0.50%",
+    disease_name: "acute stress reaction",
+    rank: 3,
+    symptom_contributions: [
+      { boost_score: "49.5%", direction: "-", symptom: "vomiting" },
+      { boost_score: "36.7%", direction: "+", symptom: "burning abdominal pain" },
+      { boost_score: "13.8%", direction: "+", symptom: "headache" }
+    ]
+  }
+];
+
+(async () => {
+  try {
+    const result = await medicalAnalysis(symptomslist, normalizedsymptoms, predictions);
+
+    console.log("RAW OUTPUT:\n", result);
+
+    try {
+      const parsed = JSON.parse(result);
+      console.log("\nPARSED OUTPUT:\n", JSON.stringify(parsed, null, 2));
+    } catch (e) {
+      console.error("\nInvalid JSON returned:", e.message);
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+})();

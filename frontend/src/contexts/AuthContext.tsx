@@ -18,12 +18,11 @@ interface StoredUser {
 interface AuthContextType {
   currentUser: StoredUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => { success: boolean; error?: string };
-  register: (name: string, email: string, password: string) => { success: boolean; error?: string };
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 const STORAGE_KEY = "healthcare_users";
 const SESSION_KEY = "healthcare_session";
 
@@ -63,9 +62,9 @@ function saveSession(email: string | null) {
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   isAuthenticated: false,
-  login: () => ({ success: false }),
-  register: () => ({ success: false }),
-  logout: () => {},
+  login: async () => ({ success: false }),
+  register: async () => ({ success: false }),
+  logout: () => { },
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {

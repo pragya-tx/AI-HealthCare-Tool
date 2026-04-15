@@ -436,4 +436,18 @@ export default function Analysis() {
           onClick={() => navigate("/chat", { state: { symptoms } })}
           className="bg-primary-foreground/20 hover:bg-primary-foreground/30 border border-primary-foreground/30 text-primary-foreground shrink-0"
         >
-          <MessageC
+          <MessageCircle className="h-4 w-4 mr-1.5" /> Open AI Chat
+        </Button>
+      </div>
+
+      {/* Health Tip */}
+      <div className="bg-card rounded-2xl border border-border/50 p-5 flex gap-3 items-start card-elevated">
+        <Lightbulb className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          <strong className="text-foreground">Remember:</strong> A symptom checker is not a substitute for a medical professional. 
+          These results are meant to inform, not diagnose. Please always consult a licensed doctor for proper evaluation and treatment.
+        </p>
+      </div>
+    </div>
+  );
+}
