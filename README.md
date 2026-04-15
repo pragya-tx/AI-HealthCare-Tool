@@ -1,12 +1,11 @@
 #  Niramaya (AI-HealthCare-Tool) 
 
-**HealthCare+** is a cutting-edge, hybrid AI medical assistant that combines local Machine Learning (NER & Classification) with Google's state-of-the-art **Gemma 3** (via Gemini API) to provide intelligent symptom analysis, disease prediction, and conversational medical guidance.
-
-> **Medical Disclaimer**: This tool is for informational purposes only and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+A web-based artificial intelligence system that can help users identify potential health issues by reporting their symptoms. The system communicates with users, collects symptom data, and uses analytical models to generate potential diagnoses, explanations and recommendations.
+> **Disclaimer**: This tool is for informational purposes only and is NOT a substitute for professional medical advice, diagnosis, or treatment.
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
 - 🧠 **Hybrid Prediction Engine**: Combines custom-trained spaCy NER models with ML classifiers for 100% offline-capable symptom extraction.
 - 🤖 **Gemini Enrichment**: Uses `gemma-3-27b-it` to analyze ML results, providing plain-English explanations, recommended actions, and safety warnings.
