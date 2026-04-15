@@ -5,7 +5,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## ✨ Features
+## Features
 
 - 🧠 **Hybrid Prediction Engine**: Combines custom-trained spaCy NER models with ML classifiers for 100% offline-capable symptom extraction.
 - 🤖 **Gemini Enrichment**: Uses `gemma-3-27b-it` to analyze ML results, providing plain-English explanations, recommended actions, and safety warnings.
@@ -16,7 +16,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## .Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: [Vite](https://vitejs.dev/) + [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/)
@@ -32,7 +32,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## .Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Python 3.10+
@@ -80,7 +80,7 @@ A web-based artificial intelligence system that can help users identify potentia
 
 ---
 
-## .Structure
+## Structure
 
 ```text
 AI-HealthCare-Tool/
