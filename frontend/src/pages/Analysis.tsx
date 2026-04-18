@@ -451,3 +451,17 @@ export default function Analysis() {
     </div>
   );
 }
+
+// ── Conditions reference data (static fallback) ──────────────────────────────
+const CONDITIONS: Array<{
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  isEmergency: boolean;
+  suggestedActions: string[];
+  medications: Array<{ name: string; note: string }>;
+  homeRemedies: string[];
+  symptomWeights: Record<string, number>;
+  minScore: number;
+}> = [];
