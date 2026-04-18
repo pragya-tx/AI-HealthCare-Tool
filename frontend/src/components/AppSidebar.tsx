@@ -40,7 +40,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-primary">
-            {!collapsed && "Niramaya"}
+            {!collapsed && "HealthCare+"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <header className="h-14 flex items-center justify-between border-b bg-card/80 backdrop-blur-sm px-4 sticky top-0 z-30">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
-              <span className="text-lg font-bold text-primary tracking-tight">Niramaya</span>
+              <span className="text-lg font-bold text-primary tracking-tight">HealthCare+</span>
             </div>
             <button
               onClick={() => navigate("/profile")}

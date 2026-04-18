@@ -27,15 +27,9 @@ app.secret_key = os.getenv("SECRET_KEY", "healthcare_secret_key_v1")
 CORS(app, supports_credentials=True)
 
 # Pre-load models to avoid delay on first request
-_models_ready = False
-try:
-    print("[INFO] Loading medical models... this may take a moment.")
-    load_models()
-    _models_ready = True
-    print("[OK] Models loaded successfully.")
-except Exception as _model_err:
-    print(f"[WARN] Models could not be loaded: {_model_err}")
-    print("[WARN] Server will start, but /api/predict and /api/chat will be unavailable.")
+print("🏥 Loading medical models... this may take a moment.")
+load_models()
+print("✅ Models loaded successfully.")
 
 # --- HELPERS ---
 
@@ -62,7 +56,7 @@ def index():
 @app.route("/api/info", methods=["GET"])
 def api_info():
     return jsonify({
-        "message": "Welcome to the Niramaya Backend API",
+        "message": "Welcome to the HealthCare+ Backend API",
         "endpoints": {
             "health": "/api/health",
             "predict": "/api/predict",
@@ -74,7 +68,7 @@ def api_info():
 
 @app.route("/api/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "message": "Niramaya Backend is running"})
+    return jsonify({"status": "ok", "message": "HealthCare+ Backend is running"})
 
 @app.route("/api/symptoms", methods=["GET"])
 def get_symptoms():
@@ -95,12 +89,6 @@ def get_symptoms():
 @app.route("/api/predict", methods=["POST"])
 def predict():
     """Main prediction endpoint using the local ML/NER pipeline."""
-    if not _models_ready:
-        return jsonify({
-            "error": "ML models are not loaded. Please train and place model files before using this endpoint.",
-            "details": "Missing: ML-Model/model.joblib and/or symptom_ner/models/symptom_ner_best"
-        }), 503
-
     data = request.get_json()
     if not data or "text" not in data:
         return jsonify({"error": "No text provided"}), 400
@@ -195,18 +183,6 @@ def metrics():
 @app.route("/api/chat", methods=["POST"])
 def chat():
     # Integrated chatbot that uses the prediction engine
-    if not _models_ready:
-        # Fall back to Gemini-only chat if ML models are unavailable
-        data = request.get_json()
-        message = data.get("message", "") if data else ""
-        if not message:
-            return jsonify({"reply": "How can I help you today?"})
-        try:
-            reply = get_gemini_chat_reply(message, [], None)
-            return jsonify({"reply": reply, "analysis": None, "ml_predictions": []})
-        except Exception as e:
-            return jsonify({"reply": "I'm having trouble connecting right now. Please try again.", "error": str(e)})
-
     data = request.get_json()
     message = data.get("message", "")
     
