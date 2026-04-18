@@ -59,7 +59,7 @@ export default function LoginPage() {
             <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Stethoscope className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-3xl font-extrabold tracking-tight">HealthCare+</span>
+            <span className="text-3xl font-extrabold tracking-tight">Niramaya</span>
           </div>
 
           <h1 className="text-4xl font-extrabold leading-tight mb-4">
@@ -92,7 +92,7 @@ export default function LoginPage() {
           <div className="h-9 w-9 rounded-xl hero-gradient flex items-center justify-center">
             <Stethoscope className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-extrabold text-primary">HealthCare+</span>
+          <span className="text-2xl font-extrabold text-primary">Niramaya</span>
         </div>
 
         <div className="w-full max-w-md">

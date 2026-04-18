@@ -56,7 +56,7 @@ def index():
 @app.route("/api/info", methods=["GET"])
 def api_info():
     return jsonify({
-        "message": "Welcome to the HealthCare+ Backend API",
+        "message": "Welcome to the Niramaya Backend API",
         "endpoints": {
             "health": "/api/health",
             "predict": "/api/predict",
@@ -68,7 +68,7 @@ def api_info():
 
 @app.route("/api/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "message": "HealthCare+ Backend is running"})
+    return jsonify({"status": "ok", "message": "Niramaya Backend is running"})
 
 @app.route("/api/symptoms", methods=["GET"])
 def get_symptoms():
