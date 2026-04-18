@@ -9,7 +9,7 @@ const translations = {
     symptoms: "Symptoms",
     profile: "Profile",
     dashboard: "Dashboard",
-    welcome: "Welcome to HealthCare",
+    welcome: "Welcome to Niramaya",
     welcomeSub: "Your personal health companion — track symptoms, chat with AI, and monitor your wellness journey.",
     getStarted: "Get Started",
     learnMore: "Learn More",
